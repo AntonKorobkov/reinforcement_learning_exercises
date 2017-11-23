@@ -2,6 +2,7 @@ import argparse
 
 from bandit import NormalBandit
 from strategy import GreedyStrategy
+from utils import plot_multiple_results
 
 
 if __name__ == '__main__':
@@ -14,6 +15,5 @@ if __name__ == '__main__':
 
     test_strategy = GreedyStrategy(bandit, int(args.iterations))
     test_strategy()
-
-    # print(test_strategy.reward_list)
+    plot_multiple_results([test_strategy.reward_array], iterations=args.iterations)
 

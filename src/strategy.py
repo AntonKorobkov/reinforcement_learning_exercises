@@ -29,9 +29,9 @@ class Strategy:
         except IndexError:
             self.reward_list.append([0, value])
 
-    def visualize_reward_array(self):
-        plt.plot([i[0] for i in self.reward_list], [i[1] for i in self.reward_list])
-        plt.show()
+    @property
+    def reward_array(self):
+        return [i[1] for i in self.reward_list]
 
 
 class GreedyStrategy(Strategy):
@@ -46,7 +46,6 @@ class GreedyStrategy(Strategy):
             self.launch_strategy(kwargs.get('learn_sample_size'))
         else:
             self.launch_strategy()
-        self.visualize_reward_array()
 
     def launch_strategy(self, learn_sample_size=3):
         """

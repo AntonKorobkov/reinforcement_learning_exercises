@@ -32,5 +32,4 @@ class NormalBandit(Bandit):
             self.parameters.append((randint(0, 10), randint(2, 4)))
 
     def pull_lever(self, armnumber):
-        # дернуть за руку
         return normal(self.parameters[armnumber][0], self.parameters[armnumber][1])
