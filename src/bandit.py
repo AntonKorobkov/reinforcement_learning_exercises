@@ -8,28 +8,29 @@ from numpy.random import normal
 
 class Bandit:
 
-    def __init__(self, arms):
+    def __init__(self, arms, **kwargs):
         self.arms = arms
-        self.parameters = []
-        self.set_parameters()
+        self.parameters = {}
+        self.set_parameters(kwargs)
 
-    def set_parameters(self):
+    def set_parameters(self, kwargs):
         """
         set parameters according to chosen distribution
         """
 
     def pull_lever(self, armnumber):
         """
-        pull the lever by number
+        pull the lever by lever number
         """
 
 
 class NormalBandit(Bandit):
 
-    def set_parameters(self):
+    def set_parameters(self, **kwargs):
         for i in range(self.arms):
             # set mean and deviation
-            self.parameters.append((randint(0, 10), randint(2, 4)))
+            self.parameters['average'] = kwargs.get('average')
+            self.parameters['std'] = kwargs.get('std')
 
     def pull_lever(self, armnumber):
-        return normal(self.parameters[armnumber][0], self.parameters[armnumber][1])
+        return normal(self.parameters['average'], self.parameters['std'])
