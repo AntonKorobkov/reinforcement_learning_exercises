@@ -2,9 +2,9 @@
 determine the choice of arm to
 """
 
-import matplotlib.pyplot as plt
-from constants import method_call_mapper
 from random import randint
+from queue import PriorityQueue
+from math import ceil
 
 class Strategy:
     """
@@ -104,6 +104,8 @@ class EpsilonGreedyStrategy(StrategyLaunch):
 
         highest_value_arm, best_levnum, avg_arm_dict = 0, None, {}
 
+        lev_queue = PriorityQueue(maxsize=ceil(kwargs.get('best_levs_rat') * self.bandit.arms))
+
         for lev in range(self.bandit.arms):
             total_value_training, iterations_performed = 0, 0
 
@@ -123,16 +125,37 @@ class EpsilonGreedyStrategy(StrategyLaunch):
                 if self.iterations == 0:
                     break
 
+                average_trained = total_value_training / iterations_performed
+
             if total_value_training > highest_value_arm:
                 best_levnum = lev
                 highest_value_arm = total_value_training
-                average_highest = total_value_training / iterations_performed
+                average_highest = average_trained
+
+            if lev_queue.full() is not True:
+                lev_queue.put((average_trained, lev))
+            else:
+                minval = lev_queue.get()
+
+                if minval[0] < average_trained:
+                    lev_queue.put((average_trained, lev))
+                else:
+                    lev_queue.put(minval)
 
         # print(average_highest)
         # print(best_levnum)
         # print(avg_arm_dict)
 
+
+        print(lev_queue.queue)
+        print(avg_arm_dict)
+        print(best_levnum)
+
         if self.iterations > 0:
+
+            best_levnums = [i[1] for i in lev_queue.queue]
+            current_best_index = best_levnums.index(best_levnum)
+
             for i in range(self.iterations):
 
                 if randint(1, 100) > kwargs.get('epsilon') * 100 or switches >= kwargs.get('max_switches'):
@@ -143,25 +166,29 @@ class EpsilonGreedyStrategy(StrategyLaunch):
                 else:
                     # print('pulling random')
 
-                    random_lever = randint(0, self.bandit.arms - 1)
+                    random_lever = randint(0, len(best_levnums) - 1)
+                    if random_lever == current_best_index:
+                        while random_lever == current_best_index:
+                            random_lever = randint(0, len(best_levnums) - 1)
 
                     # print(avg_arm_dict[random_lever])
                     # print(avg_arm_dict[best_levnum])
 
-                    random_pull_result = self.bandit.pull_lever(random_lever)
+                    random_pull_result = self.bandit.pull_lever(best_levnums[random_lever])
                     self.update_reward_list(random_pull_result)
-                    self.update_average_values_dict(avg_arm_dict, random_pull_result, random_lever)
+                    self.update_average_values_dict(avg_arm_dict, random_pull_result, best_levnums[random_lever])
 
-                    if avg_arm_dict[random_lever][0] > average_highest:
+                    if avg_arm_dict[best_levnums[random_lever]][0] > average_highest:
                         # s
                         print('new optima located')
                         print(best_levnum)
-                        print(random_lever)
+                        print(best_levnums[random_lever])
                         print(avg_arm_dict)
                         print(average_highest)
-                        average_highest = avg_arm_dict[random_lever][0]
-                        best_levnum = random_lever
+                        average_highest = avg_arm_dict[best_levnums[random_lever]][0]
+                        best_levnum = best_levnums[random_lever]
                         switches += 1
+                        current_best_index = random_lever
 
     def update_average_values_dict(self, avgvdict, value, elnum):
 

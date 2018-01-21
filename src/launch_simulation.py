@@ -14,6 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('--max_switches', type=int, default=2)
     parser.add_argument('--normal_distribution_mean', type=int, default=6)
     parser.add_argument('--normal_distribution_deviation', type=int, default=2)
+    parser.add_argument('--best_arm_ratio', type=float, default=0.1)
     args = parser.parse_args()
 
     bandit = NormalBandit(int(args.arms), average=args.normal_distribution_mean, std=args.normal_distribution_deviation)
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     epsilon_strategy = EpsilonGreedyStrategy(bandit, int(args.iterations))
     test_strategy(learn_sample_size=args.learn_sample_size)
     epsilon_strategy(learn_sample_size=args.learn_sample_size, epsilon=args.epsilon_greedy,
-                     max_switches=args.max_switches)
+                     max_switches=args.max_switches, best_levs_rat=args.best_arm_ratio)
     labels_array = ['Greedy strategy', 'Epsilon greedy strategy']
 
     plot_multiple_results([test_strategy.reward_array, epsilon_strategy.reward_array], labels_array,
