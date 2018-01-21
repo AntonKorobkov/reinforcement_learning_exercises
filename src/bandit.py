@@ -11,7 +11,7 @@ class Bandit:
     def __init__(self, arms, **kwargs):
         self.arms = arms
         self.parameters = {}
-        self.set_parameters(kwargs)
+        self.set_parameters(**kwargs)
 
     def set_parameters(self, kwargs):
         """

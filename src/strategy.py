@@ -96,7 +96,12 @@ class EpsilonGreedyStrategy(StrategyLaunch):
         how do we choose lever to pull
         for each lever we perform learning attempts
         then we choose the lever with highest average result
+        what if we set a limit to the number of switches.
+
         """
+
+        switches = 0
+
         highest_value_arm, best_levnum, avg_arm_dict = 0, None, {}
 
         for lev in range(self.bandit.arms):
@@ -130,24 +135,25 @@ class EpsilonGreedyStrategy(StrategyLaunch):
         if self.iterations > 0:
             for i in range(self.iterations):
 
-                if randint(1, 100) > kwargs.get('epsilon') * 100:
+                if randint(1, 100) > kwargs.get('epsilon') * 100 or switches >= kwargs.get('max_switches'):
                     chosen_lever_pull = self.bandit.pull_lever(best_levnum)
                     self.update_reward_list(chosen_lever_pull)
                     self.update_average_values_dict(avg_arm_dict, chosen_lever_pull, best_levnum)
 
                 else:
-                    print('pulling random')
+                    # print('pulling random')
 
                     random_lever = randint(0, self.bandit.arms - 1)
 
-                    print(avg_arm_dict[random_lever])
-                    print(avg_arm_dict[best_levnum])
+                    # print(avg_arm_dict[random_lever])
+                    # print(avg_arm_dict[best_levnum])
 
                     random_pull_result = self.bandit.pull_lever(random_lever)
                     self.update_reward_list(random_pull_result)
                     self.update_average_values_dict(avg_arm_dict, random_pull_result, random_lever)
 
                     if avg_arm_dict[random_lever][0] > average_highest:
+                        # s
                         print('new optima located')
                         print(best_levnum)
                         print(random_lever)
@@ -155,6 +161,7 @@ class EpsilonGreedyStrategy(StrategyLaunch):
                         print(average_highest)
                         average_highest = avg_arm_dict[random_lever][0]
                         best_levnum = random_lever
+                        switches += 1
 
     def update_average_values_dict(self, avgvdict, value, elnum):
 
