@@ -29,8 +29,10 @@ class NormalBandit(Bandit):
     def set_parameters(self, **kwargs):
         for i in range(self.arms):
             # set mean and deviation
-            self.parameters['average'] = kwargs.get('average')
-            self.parameters['std'] = kwargs.get('std')
+            random_average = kwargs.get('average') + randint(-int((kwargs.get('average') / 20) * 100),
+                                                             (int(kwargs.get('average') / 20) * 100)) / 100
+
+            self.parameters.update({i: {'average': random_average, 'std': kwargs.get('std')}})
 
     def pull_lever(self, armnumber):
-        return normal(self.parameters['average'], self.parameters['std'])
+        return normal(self.parameters[armnumber]['average'], self.parameters[armnumber]['std'])

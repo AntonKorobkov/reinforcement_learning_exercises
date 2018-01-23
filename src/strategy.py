@@ -142,15 +142,6 @@ class EpsilonGreedyStrategy(StrategyLaunch):
                 else:
                     lev_queue.put(minval)
 
-        # print(average_highest)
-        # print(best_levnum)
-        # print(avg_arm_dict)
-
-
-        print(lev_queue.queue)
-        print(avg_arm_dict)
-        print(best_levnum)
-
         if self.iterations > 0:
 
             best_levnums = [i[1] for i in lev_queue.queue]
@@ -164,27 +155,19 @@ class EpsilonGreedyStrategy(StrategyLaunch):
                     self.update_average_values_dict(avg_arm_dict, chosen_lever_pull, best_levnum)
 
                 else:
-                    # print('pulling random')
 
                     random_lever = randint(0, len(best_levnums) - 1)
                     if random_lever == current_best_index:
                         while random_lever == current_best_index:
                             random_lever = randint(0, len(best_levnums) - 1)
 
-                    # print(avg_arm_dict[random_lever])
-                    # print(avg_arm_dict[best_levnum])
 
                     random_pull_result = self.bandit.pull_lever(best_levnums[random_lever])
                     self.update_reward_list(random_pull_result)
                     self.update_average_values_dict(avg_arm_dict, random_pull_result, best_levnums[random_lever])
 
                     if avg_arm_dict[best_levnums[random_lever]][0] > average_highest:
-                        # s
-                        print('new optima located')
-                        print(best_levnum)
-                        print(best_levnums[random_lever])
-                        print(avg_arm_dict)
-                        print(average_highest)
+
                         average_highest = avg_arm_dict[best_levnums[random_lever]][0]
                         best_levnum = best_levnums[random_lever]
                         switches += 1

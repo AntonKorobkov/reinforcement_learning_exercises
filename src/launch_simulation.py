@@ -29,5 +29,3 @@ if __name__ == '__main__':
 
     plot_multiple_results([test_strategy.reward_array, epsilon_strategy.reward_array], labels_array,
                           iterations=args.iterations)
-
-
